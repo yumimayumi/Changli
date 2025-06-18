@@ -3,12 +3,12 @@ main = "build/worker/shim.mjs"
 compatibility_date = "2024-05-23"
 minify = true
 
-account_id = "05f49c4336ab8d1df4fabeeebbcdb083"
+account_id = "3815b522c06a00dbc820f800710e10b8"
 workers_dev = true
 
 [[kv_namespaces]]
 binding = "YUMI"
-id = "5067ad020c154b56966b5e6726f8bc4c"
+id = "cfd47e3ee42e481ca9623623df3444b7"
 
 [build]
 command = "cargo install worker-build && worker-build --release"
@@ -17,6 +17,6 @@ command = "cargo install worker-build && worker-build --release"
 build = { command = "cargo install worker-build && worker-build --dev" }
 
 [vars]
-UUID = "aacac2d2-cac8-442a-9f2c-4e4f807065f5"
+UUID = "7747b2e6-df98-4399-81b7-ebd3271babd3"
 MAIN_PAGE_URL = "https://raw.githubusercontent.com/Mayumiwandi/Changli/refs/heads/main/web/index.html"
 SUB_PAGE_URL = "https://raw.githubusercontent.com/Mayumiwandi/Changli/refs/heads/main/web/sub.html"
