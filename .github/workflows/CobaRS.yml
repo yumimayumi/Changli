@@ -34,9 +34,12 @@ jobs:
       - name: Install wasm-opt
         run: cargo install wasm-opt --locked
 
-      # 5. Build ke WASM
-      - name: Build Rust project to WASM
-        run: wasm-pack build --target web
+      - name: Install worker-build
+        run: cargo install worker-build --locked
+
+      - name: Build release untuk Cloudflare Worker
+        run: worker-build --release
+
 
       # 6. Cek dan Optimasi WASM
       - name: Cek dan Optimasi WASM
