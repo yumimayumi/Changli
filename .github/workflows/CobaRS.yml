@@ -15,7 +15,7 @@ jobs:
     environment: cf
 
     steps:
-      # 1. Checkout kode
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -24,34 +24,37 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          target: wasm32-unknown-unknown
+          targets: wasm32-unknown-unknown
 
       # 3. Install wasm-pack
       - name: Install wasm-pack
         run: cargo install wasm-pack --locked
 
-      # 4. Install wasm-opt via binaryen
-      - name: Install wasm-opt (via Cargo)
+      # 4. Install wasm-opt (via Cargo)
+      - name: Install wasm-opt
         run: cargo install wasm-opt --locked
 
-      # 5. Build to WASM (default output: index_bg.wasm)
-      - name: Build to WASM
+      # 5. Build ke WASM
+      - name: Build Rust project to WASM
         run: wasm-pack build --target web
 
-      # 6. Optimize WASM
-      - name: Optimize WASM
+      # 6. Cek dan Optimasi WASM
+      - name: Cek dan Optimasi WASM
         run: |
+          echo "📦 Mengecek versi wasm-opt..."
+          wasm-opt --version
+
           INPUT="pkg/index_bg.wasm"
           if [ -f "$INPUT" ]; then
-            echo "Optimizing $INPUT..."
+            echo "🚀 Optimizing $INPUT..."
             wasm-opt "$INPUT" -Oz -o "$INPUT"
           else
-            echo "File $INPUT tidak ditemukan!"
+            echo "❌ File $INPUT tidak ditemukan!"
             exit 1
           fi
 
       # 7. Deploy ke Cloudflare Worker
-      - name: Deploy to Cloudflare
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
