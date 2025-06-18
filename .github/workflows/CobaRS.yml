@@ -1,0 +1,59 @@
+name: Deploy Cloudflare Worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE.md'
+
+jobs:
+  build_optimize_deploy:
+    runs-on: ubuntu-latest
+    environment: cf
+
+    steps:
+      # 1. Checkout kode
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Rust + target wasm32
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+
+      # 3. Install wasm-pack
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+
+      # 4. Install wasm-opt via binaryen
+      - name: Install wasm-opt
+        run: |
+          curl -sL https://github.com/WebAssembly/binaryen/releases/latest/download/binaryen-116-x86_64-linux.tar.gz | tar xz
+          sudo cp binaryen-*/bin/wasm-opt /usr/local/bin/
+
+      # 5. Build to WASM (default output: index_bg.wasm)
+      - name: Build to WASM
+        run: wasm-pack build --target web
+
+      # 6. Optimize WASM
+      - name: Optimize WASM
+        run: |
+          INPUT="pkg/index_bg.wasm"
+          if [ -f "$INPUT" ]; then
+            echo "Optimizing $INPUT..."
+            wasm-opt "$INPUT" -Oz -o "$INPUT"
+          else
+            echo "File $INPUT tidak ditemukan!"
+            exit 1
+          fi
+
+      # 7. Deploy ke Cloudflare Worker
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
