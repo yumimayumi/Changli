@@ -50,7 +50,8 @@ jobs:
           INPUT="pkg/index_bg.wasm"
           if [ -f "$INPUT" ]; then
             echo "🚀 Optimizing $INPUT..."
-            wasm-opt "$INPUT" -Oz -o "$INPUT"
+            wasm-opt "$INPUT" --enable-bulk-memory -Oz -o "$INPUT"
+
           else
             echo "❌ File $INPUT tidak ditemukan!"
             exit 1
